@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全銀行系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            min-width: 400px;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .bank-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: #333;
+        }
+
+        .btn-small {
+            width: auto;
+            padding: 10px 20px;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .balance-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .transaction-history {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-type {
+            font-weight: bold;
+        }
+
+        .transaction-type.deposit {
+            color: #28a745;
+        }
+
+        .transaction-type.withdraw {
+            color: #dc3545;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .transaction-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            min-width: 300px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 登入界面 -->
+        <div id="loginPage">
+            <div class="header">
+                <div class="bank-icon">🏦</div>
+                <div class="title">安全銀行系統</div>
+            </div>
+
+            <div id="loginAlert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" id="username" class="form-control" placeholder="姓名 (註冊時需要)" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" class="form-control" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" class="form-control" placeholder="密碼" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登入</button>
+                <button type="button" class="btn btn-secondary" onclick="registerUser()">註冊新帳戶</button>
+            </form>
+        </div>
+
+        <!-- 主要儀表板 -->
+        <div id="dashboard" class="dashboard">
+            <div class="user-info">
+                <h2>歡迎, <span id="welcomeUser"></span>!</h2>
+                <button class="btn btn-danger btn-small" onclick="logout()">登出</button>
+            </div>
+
+            <div class="balance-card">
+                <div>目前餘額</div>
+                <div class="balance-amount" id="balanceAmount">NT$ 0</div>
+                <button class="btn btn-small" onclick="refreshBalance()" style="background: rgba(255,255,255,0.2); color: white; margin-top: 15px;">刷新餘額</button>
+            </div>
+
+            <div class="action-grid">
+                <button class="btn btn-success" onclick="showDepositModal()">儲值</button>
+                <button class="btn btn-warning" onclick="showWithdrawModal()">提款</button>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 20px;">交易記錄</h3>
+                <div class="transaction-history" id="transactionHistory">
+                    <div style="text-align: center; color: #666;">載入中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 儲值模態框 -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content">
+            <h3>儲值</h3>
+            <div class="form-group">
+                <input type="number" id="depositAmount" class="form-control" placeholder="請輸入儲值金額" min="1" step="1">
+            </div>
+            <button class="btn btn-success" onclick="deposit()">確認儲值</button>
+            <button class="btn btn-secondary" onclick="closeModal('depositModal')">取消</button>
+        </div>
+    </div>
+
+    <!-- 提款模態框 -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3>提款</h3>
+            <div class="form-group">
+                <input type="number" id="withdrawAmount" class="form-control" placeholder="請輸入提款金額" min="1" step="1">
+            </div>
+            <button class="btn btn-warning" onclick="withdraw()">確認提款</button>
+            <button class="btn btn-secondary" onclick="closeModal('withdrawModal')">取消</button>
+        </div>
+    </div>
+
+    <script>
+        // API 基地址配置
+        const API_BASE_URL = '/api';
+        
+        // 模擬的資料存儲（實際應用中會連接到後端）
+        let users = JSON.parse(localStorage.getItem('bankUsers') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+
+        // 如果已經登入，直接顯示儀表板
+        if (currentUser) {
+            showDashboard();
+        }
+
+        // 登入功能
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showAlert('登入成功!', 'success', 'loginAlert');
+                setTimeout(() => showDashboard(), 1000);
+            } else {
+                showAlert('電子郵件或密碼錯誤', 'error', 'loginAlert');
+            }
+        }
+
+        // 註冊功能
+        function registerUser() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !email || !password) {
+                showAlert('請填寫所有欄位', 'error', 'loginAlert');
+                return;
+            }
+
+            if (users.find(u => u.email === email)) {
+                showAlert('此電子郵件已被註冊', 'error', 'loginAlert');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                username,
+                email,
+                password,
+                balance: 0
+            };
+
+            users.push(newUser);
+            localStorage.setItem('bankUsers', JSON.stringify(users));
+            showAlert('註冊成功！請登入', 'success', 'loginAlert');
+        }
+
+        // 顯示儀表板
+        function showDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('welcomeUser').textContent = currentUser.username;
+            refreshBalance();
+            loadTransactionHistory();
+        }
+
+        // 刷新餘額
+        function refreshBalance() {
+            // 從存儲中重新載入用戶資料
+            const updatedUser = users.find(u => u.id === currentUser.id);
+            if (updatedUser) {
+                currentUser.balance = updatedUser.balance;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            document.getElementById('balanceAmount').textContent = `NT$ ${currentUser.balance.toLocaleString()}`;
+        }
+
+        // 顯示儲值模態框
+        function showDepositModal() {
+            document.getElementById('depositModal').style.display = 'flex';
+        }
+
+        // 顯示提款模態框
+        function showWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'flex';
+        }
+
+        // 關閉模態框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.getElementById(modalId.replace('Modal', 'Amount')).value = '';
+        }
+
+        // 儲值功能
+        function deposit() {
+            const amount = parseInt(document.getElementById('depositAmount').value);
+
+            if (!amount || amount <= 0) {
+                alert('請輸入有效的金額');
+                return;
+            }
+
+            // 更新用戶餘額
+            currentUser.balance += amount;
+            updateUserInStorage();
+
+            // 記錄交易
+            addTransaction('deposit', amount);
+
+            // 刷新界面
+            refreshBalance();
+            loadTransactionHistory();
+            closeModal('depositModal');
+
+            alert(`成功儲值 NT$ ${amount.toLocaleString()}`);
+        }
+
+        // 提款功能
+        function withdraw() {
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+
+            if (!amount || amount <= 0) {
+                alert('請輸入有效的金額');
+                return;
+            }
+
+            if (amount > currentUser.balance) {
+                alert('餘額不足');
+                return;
+            }
+
+            // 更新用戶餘額
+            currentUser.balance -= amount;
+            updateUserInStorage();
+
+            // 記錄交易
+            addTransaction('withdraw', amount);
+
+            // 刷新界面
+            refreshBalance();
+            loadTransactionHistory();
+            closeModal('withdrawModal');
+
+            alert(`成功提款 NT$ ${amount.toLocaleString()}`);
+        }
+
+        // 載入交易記錄
+        async function loadTransactionHistory() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/transactions?user_id=${currentUser.id}&limit=20`);
+                const transactions = await response.json();
+
+                if (response.ok) {
+                    displayTransactions(transactions);
+                } else {
+                    console.error('獲取交易記錄失敗');
+                    // 降級到本地存儲
+                    loadTransactionHistoryOffline();
+                }
+            } catch (error) {
+                console.error('連接服務器失敗:', error);
+                // 降級到本地存儲
+                loadTransactionHistoryOffline();
+            }
+        }
+
+        // 離線載入交易記錄
+        function loadTransactionHistoryOffline() {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const userTransactions = transactions.filter(t => t.user_id === currentUser.id || t.userId === currentUser.id);
+            displayTransactions(userTransactions);
+        }
+
+        // 顯示交易記錄
+        function displayTransactions(transactions) {
+            const historyDiv = document.getElementById('transactionHistory');
+
+            if (!transactions || transactions.length === 0) {
+                historyDiv.innerHTML = '<div style="text-align: center; color: #666;">尚無交易記錄</div>';
+                return;
+            }
+
+            historyDiv.innerHTML = transactions.map(transaction => `
+                <div class="transaction-item">
+                    <div>
+                        <div class="transaction-type ${transaction.type}">
+                            ${transaction.type === 'deposit' ? '儲值' : '提款'}
+                        </div>
+                        <div class="transaction-date">${formatDate(transaction.date)}</div>
+                    </div>
+                    <div>
+                        <div class="transaction-amount" style="color: ${transaction.type === 'deposit' ? '#28a745' : '#dc3545'}">
+                            ${transaction.type === 'deposit' ? '+' : '-'} NT$ ${transaction.amount.toLocaleString()}
+                        </div>
+                        <div style="font-size: 12px; color: #666;">
+                            餘額: NT$ ${transaction.balance.toLocaleString()}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 格式化日期
+        function formatDate(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleString('zh-TW');
+            } catch {
+                return dateStr;
+            }
+        }
+
+        // 更新用戶存儲
+        function updateUserInStorage() {
+            const users = JSON.parse(localStorage.getItem('bankUsers') || '[]');
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('bankUsers', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        }
+
+        // 添加交易記錄
+        function addTransaction(type, amount) {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const transaction = {
+                id: Date.now(),
+                user_id: currentUser.id,
+                type,
+                amount,
+                date: new Date().toISOString(),
+                balance: currentUser.balance
+            };
+
+            transactions.unshift(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        // 離線模式輔助函數
+        function updateUserInStorageOffline() {
+            const users = JSON.parse(localStorage.getItem('bankUsers') || '[]');
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('bankUsers', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        }
+
+        function addTransactionOffline(type, amount) {
+            const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            const transaction = {
+                id: Date.now(),
+                user_id: currentUser.id,
+                type,
+                amount,
+                date: new Date().toISOString(),
+                balance: currentUser.balance
+            };
+
+            transactions.unshift(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        }
+
+        // 登出功能
+        function logout() {
+            if (confirm('確定要登出嗎？')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('loginPage').style.display = 'block';
+                document.getElementById('loginForm').reset();
+                document.getElementById('loginAlert').innerHTML = '';
+            }
+        }
+
+        // 顯示警告訊息
+        function showAlert(message, type, containerId) {
+            const alertDiv = document.getElementById(containerId);
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // 點擊模態框外部關閉
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
