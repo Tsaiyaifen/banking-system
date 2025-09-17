@@ -7,7 +7,7 @@
 ✅ 安全登出功能
 
 技術特點
-前端: 現代化響應式設計，支持離線模式
+前端: HTML5 + CSS3 + JavaScript，現代化響應式設計，支持離線模式
 後端: Go + SQLite3，RESTful API
 安全: bcrypt 密碼哈希，SQL 注入防護，事務安全
 
